@@ -59,21 +59,21 @@ start:
      ; Set the cursor position, row 10, col 10
      ldx #$0A   ;set the row to 10
      ldy #$0A   ;set the column to 10
-     clc       ;clear the carry flag for PLOT, this must be done to set the cursor
-     jsr PLOT  ;moves the current cursor position
+     clc        ;clear the carry flag for PLOT, this must be done to set the cursor
+     jsr PLOT   ;moves the current cursor position
 
-     ; Set text color to white
+     ; Set text drawing color to white
      lda #WHITE
-     sta CUR_COLOR
+     sta CUR_COLOR  
 
-     ; Print message using the KERNAL CHROUT
+     ; Print message using the KERNAL CHROUT in a loop indexed by the x register
      ldx #$00  ;start at position 0 in the string
 print_loop:
-     lda message,x       ; indexed absolute addressing, address of message+x
-     beq forever            ; 0 terminator ends string
-     jsr CHROUT
-     inx
-     bne print_loop      ; go back to top of loop
+     lda message,x     ; absolute, x addressing mode.  Actual address is calaculated as message+x
+     beq forever       ; 0 terminator ends string.  Branch if 0 is in the A reg. otherwise continue
+     jsr CHROUT        ; output the char in the A reg
+     inx               ; increment the x reg by 1
+     bne print_loop    ; go back to top of loop and do it again
 
 forever:
      jmp forever
