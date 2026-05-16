@@ -5,7 +5,7 @@
 
 CHROUT      = $FFD2        ;address of the CHROUT KERNAL routine
 PLOT        = $FFF0        ;address of the PLOT KERNAL routine
-GETIN       = $FFE4
+GETIN       = $FFE4        ;Keyboard input routine
 
 ; -------------------------
 ; Memory locations
@@ -13,8 +13,8 @@ GETIN       = $FFE4
 SCREEN_RAM      = $0400   ;1024 decimal
 COLOR_RAM       = $D800   ;55296 decimal
 CUR_COLOR       = $0286   ; address of current text color
-BORDER          = $D020
-BACKGROUND      = $D021
+BORDER          = $D020   ;Border color address (0-15)
+BACKGROUND      = $D021   ;Background color address (0-15)
 
 ; -------------------------
 ; Key constants
@@ -46,6 +46,7 @@ GREY_2          = $0C     ;12 decimal
 LIGHT_GREEN     = $0D     ;13 decimal
 LIGHT_BLUE      = $0E     ;14 decimal
 GREY_3          = $0F     ;15 decimal
+
 ; ------------------------------------------------
 ; BASIC stub
 ; puts "10 SYS2064" into the start of BASIC
@@ -71,9 +72,8 @@ start:
     sta CUR_COLOR
 
 clear_screen:
-    ; Clear screen
-    lda #$93  ;screen code for CLR/HOME
-    jsr CHROUT
+    lda #$93      ;screen code for CLR/HOME
+    jsr CHROUT    ; output the screen clear control code
 
 set_text_position:
     ; Set the cursor position, row 10, col 10
@@ -81,8 +81,6 @@ set_text_position:
     ldy text_col   ;set the column to 10
     clc       ;clear the carry flag for PLOT, this must be done to set the cursor
     jsr PLOT  ;moves the current cursor position
-
-
 
     ; Print message using the KERNAL CHROUT
     ldx #$00  ;start at position 0 in the string
@@ -96,7 +94,7 @@ print_loop:
 wait_for_key:
     jsr GETIN
     beq wait_for_key    ; no key pressed
-    cmp #KEY_M
+    cmp #KEY_M    ;loop through checking for m,b,s,up,down,left,right
     beq m_key
     cmp #KEY_B
     beq b_key
